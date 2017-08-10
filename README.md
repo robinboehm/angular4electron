@@ -178,5 +178,5 @@ Das sind erst mal alle Einstellungen die du benötigst, um deine App starten zu 
 ```
 Es sollte ein waschechtes OS Fenster aufgehen, mit dem Inhalt deiner Angular4 App.
 
-![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/electron1.png "Initial Start")
+![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/electron_window1.png "Initial Start")
 
