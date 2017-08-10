@@ -307,3 +307,4 @@ constructor(){
 Zusätzlich zu “Grayskull” solltest du jetzt auch noch die Ausgabe “Browser” in der Konsole sehen.
 
 ![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/console.png "Console browser")
+
