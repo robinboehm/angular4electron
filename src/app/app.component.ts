@@ -6,5 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  title: String;
+
+  constructor() {
+    var app = electron.remote.app;
+    this.title = app.getAppPath();
+    console.log(app.beiDerMachtVon());
+    var platform = require('os').platform();
+    console.log(platform);
+  }
 }

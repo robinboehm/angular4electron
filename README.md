@@ -180,3 +180,130 @@ Es sollte ein waschechtes OS Fenster aufgehen, mit dem Inhalt deiner Angular4 Ap
 
 ![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/electron_window1.png "Initial Start")
 
+## Weitere Funktionen
+Du bist jetzt an einer Stelle angekommen, an der du eventuell nicht mehr weiter machen musst, da dir der aktuelle Fortschritt schon langt. Das trifft genau dann zu, wenn du nicht vorhast mit dem Betriebssystem zu kommunizieren (z.B. Dateien lesen/schreiben), oder mit dem Electron Framework zu kommunizieren.
+Im Moment kannst du aus deiner Angular2 Logik nicht auf Electron zugreifen. Außerdem denkt deine App nach wie vor, dass sie sich in der Umgebung Browser befindet, anstatt in der Umgebung Betriebssystem. Deswegen musst du den Zugriff auf Electron in deine App “biegen”. 
+
+#### Der folgende Weg ist ein Workaround und eher schmuddelig!
+Thorsten Hans hat ein Projekt entwickelt um angenehm auf Electron zuzugreifen. Das ganze mit TypeScript, wodurch man alle Vorteile von TS behält. Ich hatte leider noch keine Zeit es zu testen, aber es wäre mal einen Versuch wert.
+Öffne die Datei ***~/repo/private/angular4electron/src/index.html*** und füge ihr folgendes Script hinzu:
+
+```html
+<head>
+ <meta charset="utf-8">
+ <title>BioApp</title>
+ <base href="./">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="icon" type="image/x-icon" href="favicon.ico">
+ 
+ <script>
+  var electron = require('electron');
+ </script>
+</head>
+```
+
+Du benutzt an dieser stelle die ***require()*** Methode, welche von ***NodeJS*** zur Verfügung gestellt wird, um Module zu laden. Diesen Trick benötigst du, da Electron ***commonJS*** nutzt um Module aufzulösen, dein Code wird aber schon mit ***Webpack*** kompiliert.
+JavaScript kennt jetzt zwar die Variable ***electron***, das bringt dir aber nichts, da du ja TypeScript benutzt. Deshalb öffne doch mal die Datei ***~/repo/private/angular4electron/src/typings.d.ts*** und mache mit folgenden Einstellungen ***TypeScript*** mit ***Electron*** bekannt:
+
+```typescript
+/* SystemJS module definition */
+declare var module: NodeModule;
+declare var electron: any;
+
+interface NodeModule {
+ id: string;
+}
+```
+
+Du kannst jetzt global auf die Variable ***electron*** zugreifen. Teste das doch einfach mal, indem du den Titel in ***~/repo/private/angular4electron/src/app/app.component.ts*** änderst:
+
+```typescript
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title: String;
+
+  constructor() {
+    var app = electron.remote.app;
+    this.title = app.getAppPath();
+  }
+}
+```
+Das wars auch schon, du greifst jetzt direkt über die global definierte ***electron*** Variable auf den App-Scope zu. 
+Starte die App, um deine Änderungen zu testen. 
+
+```bash
+~/repo/private/angular4electron$ npm run electron
+```
+
+Solltest du jetzt anstelle von ***app*** den Pfad zu deiner App sehen.
+
+![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/electron_window2.png "Electron Zugriff")
+
+Du kannst jetzt auch eigene Functionen innerhalb der Electron Umgebung (renderer) definieren. Das solltest du auch gleich mal ausprobieren! Öffne die Datei ***~/repo/private/angular4electron/src/electron/main.js*** und füge ihr am Ende eine neue Methode hinzu:
+
+```javascript
+app.beiDerMachtVon = function () {
+    return "Grayskull";
+}
+```
+
+Rufe diese Methode in der Komponente ***~/repo/private/angular4electron/src/app.component.ts*** einmal auf:
+
+```typescript
+constructor(){
+    var app = electron.remote.app;
+    this.title = app.getAppPath();
+    console.log(app.beiDerMachtVon());
+}
+```
+Ob das geklappt hat, siehst du in der Konsole deiner App, die du mit ***``<STRG>+<SHIFT>+I``*** öffnen kannst, nachdem du die App erneut gebaut hast natürlich.
+
+```bash
+~/repo/private/angular4electron$ npm run electron
+```
+![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/electron_window3.png "Electron App Method")
+
+Im laufe der Zeit wirst du mit Sicherheit auch mal innerhalb deiner Angular2 Logik auf Node.js zugreifen wollen! 
+Zum Beispiel, wenn du neue Module laden willst (***require()***). Hierfür musst du (ebenfalls wie bei Electron) TypeScript mitteilen, dass es dort ein Framework mit diversen neuen Methoden gibt. 
+
+#### Das schöne ist, dass im du hier nicht schmutzig arbeiten musst, 
+weil es eine TypeScript Erweiterung für die ***Node.js*** Methoden gibt. Außerdem wird die Visual Studio Code Intelli-Sense um die neuen TypeScript Befehle erweitert. Um das zu erreichen sind folgende Schritte notwendig:
+Installiere die ***node types***, indem du eine Konsole im Hauptverzeichnis deiner App öffnest und diesen Befehl eingibst:
+
+```bash
+~/repo/private/angular4electron/$ npm install --save @types/node
+```
+
+Füge die neuen Types zu deinen ***TypeScript Kompiler-Optionen*** hinzu, indem du die Datei ***~/repo/private/angular4electron/src/tsconfig.app.json*** erweiterst:
+
+```javascript
+"compilerOptions": {
+  "outDir": "../out-tsc/app",
+    "module": "es2015",
+      "baseUrl": "",
+        "types": [
+          "node"
+        ]
+},
+```
+
+Teste die neuen Erweiterungen und baue folgenden Befehl in deine ***~/repo/private/angular4electron/src/app.component.ts*** ein:
+
+```typescript
+constructor(){
+  var app = electron.remote.app;
+  this.title = app.getAppPath();
+  console.log(app.beiDerMachtVon());
+  var platform = require('os').platform();
+  console.log(platform);
+}
+```
+Zusätzlich zu “Grayskull” solltest du jetzt auch noch die Ausgabe “Browser” in der Konsole sehen.
+
+![alt text](https://raw.githubusercontent.com/EsSpricht/angular4electron/master/doc/images/console.png "Console browser")
