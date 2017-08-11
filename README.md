@@ -17,6 +17,8 @@ NodeJS v7.10.1
 NPM 4.2.0
 ```
 
+Das Repository für diese Anleitung findest Du [hier](https://github.com/EsSpricht/angular4electron).
+
 ## Vorbereitung
 Um ein neues Angular4 Projekt zu erstellen, benötigst Du nicht zwingend die **Angular-CLI**. Ich würde aber stets empfehlen sie zu benutzen. Das hat vielerlei Gründe, nicht zuletzt, dass bereits alles vorkonfiguriert ist. Selbst ein Testframework steht Dir zur Verfügung. Die **AngularCLI** nimmt Dir einfach viel Arbeit ab und unterstützt dich während des gesamten Entwicklungsprozesses.
 
