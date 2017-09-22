@@ -1,5 +1,7 @@
 # Angular4 + Electron Boilerplate
 
+Dieser Artikel wurde auf [AngularJS.DE](https://angularjs.de/artikel/angular-electron/) veröffentlich.
+
 # Einleitung
 Die Entwickler vom Elektron Framework fangen ihre Produktbeschreibung mit folgendem Slogan an: 
 
